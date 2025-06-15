@@ -11,6 +11,7 @@ import Thought from "../models/thought.models.js"
 import ApiError from "../utils/ApiError.js"
 import ApiResponse from "../utils/ApiResponse.js"
 import { uploadFileOnCloudinary } from "../utils/cloudinary.js"
+import { generateAccessToken,generateRefreshToken } from "../utils/generateTokens.js"
 
 // interfaces
 import { IUserAuthMiddleware } from "../interfaces/validation.interfaces.js"; 
@@ -24,152 +25,131 @@ interface MulterRequest extends Request{
   files?:Express.Multer.File[]
 }
 
+interface AuthenticatedUserRequest extends Request{
+  user:IUserAuthMiddleware
+}
+
 type LoginBody={
   username:string,
   password:string
 }
 
-const userLogin=async(req:Request,res:Response):Promise<void>=>{
-  const {username,password}:LoginBody=req.body;
-  const user = await User.findOne({
+//userSignup validation   ->
+const userSignup=asyncHandler(async(req:Request,res:Response)=>{
+  const {username,password}= req.body;
+  
+  if(await User.exists({
     username
+  })){
+    throw new ApiError(409,"User with that username already exists")
+  }
+
+  try {
+    const user = await User.create({
+      username,
+      password
+    })
+    res.status(201).json(
+      new ApiResponse(201,"User signed up successfully")
+    )
+  } catch (err) {
+    throw new ApiError(500,"Couldn't create the user",err);
+  }
+
+})
+
+const userLogin=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
+  const {username,password}:LoginBody=req.body;
+  try {
+    
+    const user = await User.findOne({
+      username
+    });
+  ``
+    if(!user){
+      throw new ApiError(404,"User does not exists");
+    }
+  
+    if(!user.comparePassword(password)){
+  
+      console.log("Incorrect password");
+      res.status(401).json(
+        new ApiError(401,"Incorrect Password")
+      )
+    } else {
+      console.log("Login successfull");
+      const payload={
+        _id:user._id,
+        username:user.username,
+        partnerId:user.partnerId?user.partnerId:null
+      }
+  
+      const accessToken = generateAccessToken(payload);
+      const refreshToken = generateRefreshToken(payload);
+      user.refreshToken = refreshToken;
+      await user.save();
+  
+      res.status(200).json(
+        new ApiResponse(200,"Login successfull",{
+          accessToken
+        })
+      )
+    }
+  } catch (error) {
+    next(error)
+  }
+}
+
+const userAddPartner=asyncHandler(async(req:Request,res:Response)=>{
+  console.log('Inside userAddPartner');
+  
+  const {user1Username,user1Password,user2Username,user2Password} =req.body
+
+  const user1=await User.findOne({
+    username:user1Username,
+  })
+
+  const user2=await User.findOne({
+    username:user2Username
+  })
+
+  if(!user1 || !user2){
+    throw new ApiError(404,"User not found - couldn't add partner")
+  } else if(!user1.comparePassword(user1Password) || !user2.comparePassword(user2Password)){
+    throw new ApiError(401,"Incorrect password")
+  } else if(user1.partnerId || user2.partnerId){
+    throw new ApiError(409,"User already has a partner");
+  }
+
+  user1.partnerId=user2._id;
+  user2.partnerId=user1._id;
+
+  await user1.save();
+  await user2.save();
+  res.status(200).json(
+    new ApiResponse(200,"Partner connected successfully")
+  )
+})
+
+//authMiddleware  ->
+const userLogout=asyncHandler(async(req:Request,res:Response)=>{
+
+  const options = {
+      httpOnly: true,
+      secure: true,
+  };
+
+  const user = await User.findByIdAndUpdate(req.user!._id,{
+    refreshToken:undefined
   });
 
-  if(!user){
-    console.log("User does not exists");
-    return;
-  }
 
-  if(!user.comparePassword(password)){
-    console.log("Incorrect password");
-    res.status(401).json(
-      new ApiError(401,"Incorrect Password")
+  res.status(200)
+    .clearCookie("accessToken",options)
+    .clearCookie("refreshToken",options)
+    .json(
+      new ApiResponse(200,"Logout successfull")
     )
-  } else {
-    console.log("Login successfull");
-    res.status(200).json(
-      new ApiResponse(200,"Login successfull")
-    )
-  }
-}
+})
 
-//auth middleware(req.user)  -> addNoteInThoughtValidation()  -> route handler
-const addNoteInThought=async(req:Request,res:Response):Promise<void>=>{
-  const {note,thoughtId} :{note:string,thoughtId:mongoose.Types.ObjectId} = req.body;
-
-  try {
-    const thought = await Thought.findById(thoughtId);
-    if(!thought){
-      throw new ApiError(404,"Thought not found - Invalid thought id")
-    }
-
-    const createdNote= await Note.create({
-      note,
-      owner:req.user!._id
-    })
-
-    thought.notes.push(createdNote._id);
-    await thought.save();
-  } catch (error) {
-    throw new ApiError(500,"Error while adding new note in the Thought");
-  }
-
-  res.status(201).json(
-    new ApiResponse(200,"New note posted successfully")
-  )
-}
-
-const createAlbum=async (req:Request,res:Response):Promise<void>=>{
-  const {title}:{title:string} = req.body;
-  
-  if(await Album.exists({
-    title
-  })){
-      throw new ApiError(409,"Album with that title already exists")
-  } 
-
-  try {
-    const album = await Album.create({
-      title,
-      notes:[],
-      images:[],
-      owner:req.user!._id
-    })
-
-    res.status(201).json(new ApiResponse<typeof album>(201,`Album : ${title} created successfully`,album));
-    return 
-  } catch (error) {
-    throw new ApiError(500,"Failed to create the Album("+title+")")
-  }
-}
-
-//authMiddleware  ->  createThoughtValidation   ->  route handler
-const createThought=async(req:Request,res:Response):Promise<void>=>{
-  const {title} = req.body;
-
-  try {
-
-    const thought = await Thought.create({
-      title,
-      owner:req.user!._id
-    })
-
-    res.status(201).json(
-      new ApiResponse(201,"New Thought created successfully")
-    )
-    return;
-  } catch (error) {
-    throw new ApiError(500,"Error creating Thought")
-  }
-}
-
-//authMiddleware -> uplodImagesValidation -> route handler
-/**
- * 1.fetch the album
- * 2.upload all images on cloudinary
- * 3.append each url to album.images[]
- * 4.return
- */
-const uploadImagesInAlbum=async(req:MulterRequest,res:Response,next:NextFunction)=>{
-  console.log('Inside uploadImagesInAlbum');
-  
-  const files = req.files!;
-  const {albumId} = req.body;
-  try {
-    
-    const album = await Album.findById(albumId);
-    if(!album){
-      throw new ApiError(404,"Album not found - Invalid albumId");
-    }
-  
-    const allPaths=files!.map(obj=>{
-      return obj.path
-    })
-  
-    const allUrl=[]
-    for(let i=0;i<files!.length;i++){
-      try{
-        const response=await uploadFileOnCloudinary(files[i].path);
-        if(response && response.url){
-          allUrl.push(response.url);
-        }
-      } catch(err){
-      
-      }
-    }
-    console.log('All files uploded to cloudinary');
-    console.log('allUrl = '+allUrl);
-    
-    album.images.push(...allUrl);
-    await album.save();
-    console.log('Album saved successfully');
-  } catch (error) {
-    next(error);
-  }
-  
-  return res.status(201).json(
-    new ApiResponse(201,files.length+' new files uploaded successfully')
-  )
-}
-
-export {userLogin,addNoteInThought,createAlbum,createThought,uploadImagesInAlbum}
+export {userSignup,userLogin,userAddPartner,userLogout}

@@ -14,7 +14,7 @@ import ApiResponse from "../utils/ApiResponse.js"
 interface decodedPayload{
   _id:string,
   username:string,
-  partnerusername:string
+  partnerId:string
 }
 
 const authMiddleware:RequestHandler=async(req:Request,res:Response,next:NextFunction)=>{
@@ -40,6 +40,7 @@ const authMiddleware:RequestHandler=async(req:Request,res:Response,next:NextFunc
   } catch (error) {
     throw new ApiError(401,"Invalid access token"); 
   }
+  console.log('authMiddleware passed successfully!');
   next();
 }
 

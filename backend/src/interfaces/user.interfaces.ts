@@ -2,9 +2,10 @@ import mongoose,{Model} from "mongoose"
 
 interface IUser{
   username:string,
-  partnerId:mongoose.Types.ObjectId,
+  partnerId?:mongoose.Types.ObjectId,
   avatar?:string,
-  password:string
+  password:string,
+  refreshToken?:string
 }
 
 interface IUserMethods {

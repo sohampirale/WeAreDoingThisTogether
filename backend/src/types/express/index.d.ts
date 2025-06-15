@@ -6,7 +6,8 @@ declare global {
     interface Request{
       user?:IUserAuthMiddleware,
       file?:Express.Multer.File,
-      files?:Express.Multer.File[]
+      files?:Express.Multer.File[],
+      body?:any
     }
   }
 }

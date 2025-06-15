@@ -14,9 +14,7 @@ const userSchema = new Schema<IUser,UserModel,IUserMethods>({
   },
   partnerId:{
     type:ObjectId,
-    ref:"User",
-    required:true,
-    unique:true
+    ref:"User"
   },
   avatar:{
     type:String
@@ -24,10 +22,15 @@ const userSchema = new Schema<IUser,UserModel,IUserMethods>({
   password:{
     type:String,
     required:true
+  },
+  refreshToken:{
+    type:String,
+    default:undefined
   }
 },{
   timestamps:true
 });
+
 
 userSchema.pre("save",async function(next){
   if(this.isModified("password")){

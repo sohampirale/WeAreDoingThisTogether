@@ -1,24 +1,23 @@
 import * as dotenv from 'dotenv'
 dotenv.config();
-import fs from "fs"
-import express from "express";
+import express,{Request,Response,NextFunction} from "express";
 import cookieParser from "cookie-parser"
+
 //utils
 import {connectDB} from "./utils/connectDB.js"
-
+import ApiError from './utils/ApiError.js';
 //routers
 import userRouter from './routes/user.routes.js';
+import albumRouter from './routes/album.routes.js';
+import thoughtRouter from './routes/thought.routes.js';
+
 import { v2 as cloudinary } from "cloudinary";
-
-
-
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
   api_key: process.env.CLOUDINARY_API_KEY!,
   api_secret: process.env.CLOUDINARY_API_SECRET!,
 });
-
 
 const app = express();
 
@@ -35,7 +34,19 @@ app.get("/hello",(req,res)=>{
 })
 
 app.use("/api/v1/user",userRouter);
+app.use("/api/v1/album",albumRouter);
+app.use("/api/v1/thought",thoughtRouter);
 
+app.use((err:ApiError,req:Request,res:Response,next:NextFunction)=>{
+  console.log('Inside global handling middleware');
+  console.log("ERROR : "+JSON.stringify(err));
+  
+  res.status(err.statusCode||500).json({
+    message:err.message,
+    success:false
+  })
+  
+})
 
 connectDB().then(()=>{
   app.listen(process.env.PORT,()=>{

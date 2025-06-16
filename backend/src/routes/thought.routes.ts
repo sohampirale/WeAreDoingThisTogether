@@ -11,7 +11,9 @@ import authMiddleware from "../middlewares/auth.middlewares.js";
 
 thoughtRouter.route("/")
   .post(authMiddleware,createThought)
-  .put(authMiddleware,addNoteInThought)
+  
+thoughtRouter.route("/:thoughtId")
+  .post(authMiddleware,addNoteInThought)
 
 
 export default thoughtRouter;

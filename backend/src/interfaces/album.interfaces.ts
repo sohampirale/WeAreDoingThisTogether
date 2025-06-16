@@ -4,7 +4,8 @@ interface IAlbum{
   title:string,
   owner:mongoose.Types.ObjectId,
   notes:mongoose.Types.ObjectId[],
-  images:string[]
+  images:string[],
+  thumbnail:string
 }
 
 interface IAlbumMethods{}

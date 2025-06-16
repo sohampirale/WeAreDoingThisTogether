@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv'
 dotenv.config();
 import express,{Request,Response,NextFunction} from "express";
 import cookieParser from "cookie-parser"
+import cors from "cors"
 
 //utils
 import {connectDB} from "./utils/connectDB.js"
@@ -20,6 +21,11 @@ cloudinary.config({
 });
 
 const app = express();
+
+app.use(cors({
+  origin: "https://vigilant-garbanzo-wrvgj6vppjxg29v99-5173.app.github.dev", 
+  credentials: true 
+}));
 
 app.use((req,res,next)=>{
   console.log("New Request at backend")

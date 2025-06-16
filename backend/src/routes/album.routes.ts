@@ -3,7 +3,8 @@ const albumRouter = express.Router();
 import multer from "multer";
 
 //controllers
-import {createAlbum,uploadImagesInAlbum,addNoteInAlbum} from "../controllers/album.controllers.js"
+import {createAlbum,uploadImagesInAlbum,addNoteInAlbum,getAllAlbums,getAlbum} from "../controllers/album.controllers.js"
+
 import authMiddleware from "../middlewares/auth.middlewares.js";
 
 type DestinationCallback=(err:Error|null,filepath:string)=>void
@@ -22,14 +23,16 @@ const upload=multer({
   storage
 })
 
+
 albumRouter.route("/")
   .post(authMiddleware,createAlbum)                 //create album
-  .put(authMiddleware,addNoteInAlbum)               //add note in album   
+  .get(authMiddleware,getAllAlbums)
 
 
-//add notes in album
-//update to /:albumId to future
-albumRouter.route("/images")
+albumRouter.route("/:albumId")
+  .get(authMiddleware,getAlbum)
+  .post(authMiddleware,addNoteInAlbum)                                          //add note in album   
   .put(authMiddleware,upload.array("uploadedImages"),uploadImagesInAlbum);      //add images in album
+
 
 export default albumRouter;

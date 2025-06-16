@@ -18,8 +18,18 @@ interface decodedPayload{
 }
 
 const authMiddleware:RequestHandler=async(req:Request,res:Response,next:NextFunction)=>{
-  const accessToken = (req.cookies?.accessToken?req.cookies.accessToken:false) || (req.headers?.authorization?.startsWith('Bearer ')?req.headers.authorization.slice(7):false);
+  console.log('Inside authMiddleware');
 
+  // const accessToken = (req.cookies?.accessToken?req.cookies.accessToken:false) || (req.headers?.authorization?.startsWith('Bearer ')?req.headers.authorization.slice(7):false);
+  let accessToken;
+  if(req&&req.cookies&&req.cookies.accessToken){
+    accessToken=req.cookies.accessToken
+  } else if(req && req.headers && req.headers.authorization &&req.headers.authorization.startsWith("Bearer ")){
+    accessToken=req.headers.authorization.slice(7)
+  }
+
+  console.log('accessToken = '+accessToken);
+  
   if(!accessToken){
     throw new ApiError(401,"Access Token not found")
   }

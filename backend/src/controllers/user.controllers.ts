@@ -65,7 +65,7 @@ const userLogin=async(req:Request,res:Response,next:NextFunction):Promise<void>=
     const user = await User.findOne({
       username
     });
-  ``
+
     if(!user){
       throw new ApiError(404,"User does not exists");
     }
@@ -89,11 +89,24 @@ const userLogin=async(req:Request,res:Response,next:NextFunction):Promise<void>=
       user.refreshToken = refreshToken;
       await user.save();
   
-      res.status(200).json(
+      res.status(200)
+      .cookie("accessToken",accessToken,{
+        httpOnly:true,
+        secure:true,
+        sameSite:"none",
+      })
+      .json(
         new ApiResponse(200,"Login successfull",{
-          accessToken
+          accessToken,
+          refreshToken,
+          user:{
+            _id:user._id,
+            username:user.username,
+            partnerId:user.partnerId?user.partnerId:null
+          }
         })
       )
+
     }
   } catch (error) {
     next(error)

@@ -31,7 +31,8 @@ const createThought=async(req:Request,res:Response):Promise<void>=>{
 }
 
 const addNoteInThought=async(req:Request,res:Response):Promise<void>=>{
-  const {note,thoughtId} :{note:string,thoughtId:mongoose.Types.ObjectId} = req.body;
+  const {note} :{note:string} = req.body;
+  const thoughtId = new mongoose.Types.ObjectId(req.params.thoughtId)
 
   try {
     const thought = await Thought.findById(thoughtId);

@@ -45,8 +45,8 @@ const uploadImagesInAlbum=async(req:Request,res:Response,next:NextFunction)=>{
   console.log('Inside uploadImagesInAlbum');
   
   const files = req.files! as Express.Multer.File[];
-  const {albumId} = req.body;
-  
+  const albumId = new mongoose.Types.ObjectId(req.params.albumId);
+
   try {
     
     const album = await Album.findById(albumId);
@@ -84,8 +84,17 @@ const uploadImagesInAlbum=async(req:Request,res:Response,next:NextFunction)=>{
   )
 }
 
-const addNoteInAlbum=async(req:Request,res:Response):Promise<void>=>{
-  let {note,albumId} :{note:string,albumId:mongoose.Types.ObjectId} = req.body;
+
+type AlbumParams={
+  albumId:string
+}
+
+const addNoteInAlbum=async(req:Request<AlbumParams>,res:Response):Promise<void>=>{
+  let {note} :{note:string} = req.body;
+
+  const albumId= new mongoose.Types.ObjectId(req.params.albumId)
+
+
   console.log("note = "+note);
   console.log("albumId = "+albumId)
   
@@ -113,4 +122,88 @@ const addNoteInAlbum=async(req:Request,res:Response):Promise<void>=>{
   )
 }
 
-export {createAlbum,uploadImagesInAlbum,addNoteInAlbum}
+
+const getAllAlbums=async(req:Request,res:Response):Promise<void>=>{
+  try{
+    const allAlbums = await Album.aggregate([
+      {
+        $match:{
+          owner:{
+            $in:[req.user._id,req.user.partnerId]
+          }
+        }
+      },{
+        $project:{
+          albumId:"$_id",
+          _id:0,
+          title:1,
+          owner:1,
+          createdAt:1,
+          thumbnail:1
+        }
+      }
+    ])
+    res.status(200).json(
+      new ApiResponse(200,"All albums fetched successfully",allAlbums)
+    )
+  } catch(err){
+    throw new ApiError(500,"Failed to fetch all albums",err)
+  }
+  
+}
+
+const getAlbum=async(req:Request<AlbumParams>,res:Response):Promise<void>=>{
+  console.log('Inside getAlbum');
+  
+  const albumId=new mongoose.Types.ObjectId(req.params.albumId);
+  try{
+    const album=await Album.aggregate([
+      {
+        $match:{
+          _id:albumId,
+        }
+      },{
+        $lookup:{
+          from:"notes",
+          localField:"notes",
+          foreignField:"_id",
+          as:"notes",
+          pipeline:[
+            {
+              $project:{
+                _id:0,
+                owner:1,
+                createdAt:1,
+                note:1
+              }
+            }
+          ]
+        }
+      },{
+        $project:{
+          albumId:"$_id",
+          _id:0,
+          title:1,
+          notes:1,
+          images:1,
+          createdAt:1
+        }
+      }
+    ]);
+
+    if(!album){
+      throw new ApiError(404,"Album not found - Invalid album id")
+    }
+
+    res.status(200).json(
+      new ApiResponse(200,"Album fetched successfully",album[0])
+    )
+    
+  } catch(err){
+    throw new ApiError(500,"Couldn't fetch album",err);
+  }
+  
+}
+
+export {createAlbum,uploadImagesInAlbum,addNoteInAlbum,getAllAlbums,getAlbum}
+

@@ -4,6 +4,7 @@ import multer from "multer";
 
 //controllers
 import {createAlbum,uploadImagesInAlbum,addNoteInAlbum,getAllAlbums,getAlbum} from "../controllers/album.controllers.js"
+
 import authMiddleware from "../middlewares/auth.middlewares.js";
 
 type DestinationCallback=(err:Error|null,filepath:string)=>void
@@ -33,9 +34,5 @@ albumRouter.route("/:albumId")
   .post(authMiddleware,addNoteInAlbum)                                          //add note in album   
   .put(authMiddleware,upload.array("uploadedImages"),uploadImagesInAlbum);      //add images in album
 
-
-//add notes in album
-//update to /:albumId to future
-albumRouter.route("/images")
 
 export default albumRouter;

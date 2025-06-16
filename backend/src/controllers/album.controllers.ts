@@ -46,7 +46,7 @@ const uploadImagesInAlbum=async(req:Request,res:Response,next:NextFunction)=>{
   
   const files = req.files! as Express.Multer.File[];
   const albumId = new mongoose.Types.ObjectId(req.params.albumId);
-  
+
   try {
     
     const album = await Album.findById(albumId);
@@ -84,6 +84,7 @@ const uploadImagesInAlbum=async(req:Request,res:Response,next:NextFunction)=>{
   )
 }
 
+
 type AlbumParams={
   albumId:string
 }
@@ -92,6 +93,7 @@ const addNoteInAlbum=async(req:Request<AlbumParams>,res:Response):Promise<void>=
   let {note} :{note:string} = req.body;
 
   const albumId= new mongoose.Types.ObjectId(req.params.albumId)
+
 
   console.log("note = "+note);
   console.log("albumId = "+albumId)
@@ -119,6 +121,7 @@ const addNoteInAlbum=async(req:Request<AlbumParams>,res:Response):Promise<void>=
     new ApiResponse(200,"New note posted successfully in the album")
   )
 }
+
 
 const getAllAlbums=async(req:Request,res:Response):Promise<void>=>{
   try{
@@ -203,3 +206,4 @@ const getAlbum=async(req:Request<AlbumParams>,res:Response):Promise<void>=>{
 }
 
 export {createAlbum,uploadImagesInAlbum,addNoteInAlbum,getAllAlbums,getAlbum}
+

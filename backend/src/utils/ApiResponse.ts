@@ -2,6 +2,7 @@ class ApiResponse<T>{
   statusCode:number;
   message:string;
   data?:T;
+  success:boolean=true;
 
   constructor(statusCode:number,message:string="Success",data?:T){
     this.statusCode=statusCode;

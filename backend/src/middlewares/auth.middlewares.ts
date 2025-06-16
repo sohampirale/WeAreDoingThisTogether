@@ -14,12 +14,22 @@ import ApiResponse from "../utils/ApiResponse.js"
 interface decodedPayload{
   _id:string,
   username:string,
-  partnerusername:string
+  partnerId:string
 }
 
 const authMiddleware:RequestHandler=async(req:Request,res:Response,next:NextFunction)=>{
-  const accessToken = (req.cookies?.accessToken?req.cookies.accessToken:false) || (req.headers?.authorization?.startsWith('Bearer ')?req.headers.authorization.slice(7):false);
+  console.log('Inside authMiddleware');
 
+  // const accessToken = (req.cookies?.accessToken?req.cookies.accessToken:false) || (req.headers?.authorization?.startsWith('Bearer ')?req.headers.authorization.slice(7):false);
+  let accessToken;
+  if(req&&req.cookies&&req.cookies.accessToken){
+    accessToken=req.cookies.accessToken
+  } else if(req && req.headers && req.headers.authorization &&req.headers.authorization.startsWith("Bearer ")){
+    accessToken=req.headers.authorization.slice(7)
+  }
+
+  console.log('accessToken = '+accessToken);
+  
   if(!accessToken){
     throw new ApiError(401,"Access Token not found")
   }
@@ -40,6 +50,7 @@ const authMiddleware:RequestHandler=async(req:Request,res:Response,next:NextFunc
   } catch (error) {
     throw new ApiError(401,"Invalid access token"); 
   }
+  console.log('authMiddleware passed successfully!');
   next();
 }
 

@@ -22,9 +22,23 @@ cloudinary.config({
 
 const app = express();
 
+const allowedOrigins=["https://cautious-funicular-x5v49945gprwcv9px-5173.app.github.dev","https://vigilant-garbanzo-wrvgj6vppjxg29v99-5173.app.github.dev"]
+
 app.use(cors({
-  origin: "https://vigilant-garbanzo-wrvgj6vppjxg29v99-5173.app.github.dev", 
-  credentials: true 
+  origin:function(origin,callback){
+    console.log("Origin = "+origin);
+    
+    if(!origin)callback(null,true);
+
+    if(allowedOrigins.includes(origin)){
+      console.log("allowed");
+      
+      callback(null,true)
+    } else {
+      callback(new ApiError(403,"This frontend website is not allowed"))
+    }
+  },
+  credentials:true
 }));
 
 app.use((req,res,next)=>{

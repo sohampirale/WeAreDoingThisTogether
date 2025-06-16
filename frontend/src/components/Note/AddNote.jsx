@@ -22,7 +22,9 @@ function AddNote({thoughtId,albumId}) {
           <button onClick={async()=>{
             await addHelper(thoughtId||albumId,note)
             setClick(prev=>!prev);
-            window.location.reload();
+            setTimeout(()=>{
+              window.location.reload();
+            },2000)
           }}>Add Note</button>
         </div>
       )}

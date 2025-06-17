@@ -28,7 +28,11 @@ app.use(cors({
   origin:function(origin,callback){
     console.log("Origin = "+origin);
     
-    if(!origin)callback(null,true);
+    if(!origin){
+      console.log("Request from postman");
+      callback(null,true);
+      return;
+    }
 
     if(allowedOrigins.includes(origin)){
       console.log("allowed");

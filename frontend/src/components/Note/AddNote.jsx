@@ -24,7 +24,7 @@ function AddNote({thoughtId,albumId}) {
             setClick(prev=>!prev);
             setTimeout(()=>{
               window.location.reload();
-            },2000)
+            },1000)
           }}>Add Note</button>
         </div>
       )}

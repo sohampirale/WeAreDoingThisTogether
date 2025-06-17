@@ -16,7 +16,9 @@ const uploadFileOnCloudinary = async function (fileUploadPath: string) {
     console.log("API_SECRET:", process.env.CLOUDINARY_API_SECRET);
 
     try {
-        const response = await cloudinary.uploader.upload(fileUploadPath);
+        const response = await cloudinary.uploader.upload(fileUploadPath,{
+            resource_type:"auto"
+        });
         console.log('file uploaded successfully : ' + response.url);
         console.log('response = ' + JSON.stringify(response));
 
@@ -30,7 +32,7 @@ const uploadFileOnCloudinary = async function (fileUploadPath: string) {
         return response;
     } catch (err) {
         console.log('failed to upload the file');
-        console.log('ERROR : ' + err);
+        console.log('ERROR : ' + JSON.stringify(err));
         fs.unlink(fileUploadPath, (err) => {
             if (err) {
                 console.log('Error deleting files from server');

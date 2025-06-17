@@ -143,8 +143,17 @@ const getAllAlbums=async(req:Request,res:Response):Promise<void>=>{
         }
       }
     ])
+
+    if(!allAlbums || allAlbums.length===0){
+      throw new ApiError(404,"Couldn't fetch albums");
+    }
+
+    const meta={
+      total:allAlbums.length
+    }
+
     res.status(200).json(
-      new ApiResponse(200,"All albums fetched successfully",allAlbums)
+      new ApiResponse(200,"All albums fetched successfully",allAlbums,meta)
     )
   } catch(err){
     throw new ApiError(500,"Failed to fetch all albums",err)

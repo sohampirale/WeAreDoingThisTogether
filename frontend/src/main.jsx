@@ -1,6 +1,5 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
 import {RouterProvider,createBrowserRouter,createRoutesFromElements,Route} from "react-router-dom"
 
 //components
@@ -28,10 +27,10 @@ const allAlbums=[
 const router = createBrowserRouter(createRoutesFromElements(
   <Route path="/" element={<App/>}>
     <Route path="albums" element={<AllAlbums allAlbums={allAlbums}/>} />
-    <Route path="albums/:albumId" element={<Album showAll={true}/>} /> 
+    <Route path="albums/:albumId" element={<Album />} /> 
   
     <Route path="thoughts"  element={<AllThoughts/>}/>
-    <Route path="thoughts/:thoughtId" element={<Thought showAll={true}/>} />
+    <Route path="thoughts/:thoughtId" element={<Thought />} />
    
   </Route>
 ))

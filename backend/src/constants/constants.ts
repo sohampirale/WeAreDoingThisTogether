@@ -1,4 +1,4 @@
-const defaultAlbumThumbnail="https://www.shutterstock.com/shutterstock/photos/2556368669/display_1500/stock-photo-happy-and-excited-girl-taking-her-boyfriend-s-hand-while-walking-enjoying-summer-sunset-at-the-2556368669.jpg";
+const defaultAlbumThumbnail="https://as2.ftcdn.net/v2/jpg/05/49/73/67/1000_F_549736781_Iu6LQhgo5DFss1Z6cf035TzCCxY0XoVI.jpg";
 
 
 export {defaultAlbumThumbnail}

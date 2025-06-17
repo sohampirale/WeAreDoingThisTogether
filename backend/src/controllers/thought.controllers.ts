@@ -56,4 +56,115 @@ const addNoteInThought=async(req:Request,res:Response):Promise<void>=>{
   )
 }
 
-export {createThought,addNoteInThought}
+const getAllThoughts=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
+  try {
+    const allThoughts=await Thought.aggregate([
+      {
+        $match:{
+          owner:{
+            $in:[req.user._id,req.user.partnerId]
+          }
+        }
+      },{
+          $lookup:{
+            from:"users",
+            localField:"owner",
+            foreignField:"_id",
+            as:"createdBy",
+            pipeline:[
+              {
+                $project:{
+                  ownerId:"$_id",
+                  username:1,
+                  _id:0
+                }
+              }
+            ]
+          }
+        },{
+          $unwind:"$createdBy"
+        },{
+          $project:{
+            thoughtId:"$_id",
+            _id:0,
+            title:1,
+            createdAt:1,
+            'createdBy.username':1,
+            'createdBy.ownerId':1,
+          }
+        }
+    ])
+    
+    const meta={
+      total:allThoughts.length
+    }
+
+    if(allThoughts){
+      console.log("allThoughts fetched successfully : "+JSON.stringify(allThoughts));
+    } else {
+      console.log("couldn't fetch all Thoughts");
+      throw new ApiError(404,"No thoughts found")
+    }
+    res.status(200).json(
+      new ApiResponse(200,"All thoughts fetched successfully",allThoughts,meta)
+    )
+  } catch (error) {
+    next(error)
+  }
+}
+
+const getThought=async(req:Request<AlbumParams>,res:Response):Promise<void>=>{
+  console.log('Inside getThought');
+  
+  const thoughtId=new mongoose.Types.ObjectId(req.params.thoughtId);
+
+  try{
+    const thought=await Thought.aggregate([
+    {
+        $match:{
+          _id:thoughtId,
+        }
+      },{
+        $lookup:{
+          from:"notes",
+          localField:"notes",
+          foreignField:"_id",
+          as:"notes",
+          pipeline:[
+            {
+              $project:{
+                _id:0,
+                owner:1,
+                createdAt:1,
+                note:1
+              }
+            }
+          ]
+        }
+      },{
+        $project:{
+          albumId:"$_id",
+          _id:0,
+          title:1,
+          notes:1,
+          createdAt:1
+        }
+      }
+    ]);
+
+    if(!thought){
+      throw new ApiError(404,"Thought not found")
+    }
+
+    res.status(200).json(
+      new ApiResponse(200,"Thoguht fetched successfully",thought[0])
+    )
+    
+  } catch(err){
+    throw new ApiError(500,"Couldn't fetch thought",err);
+  }
+  
+}
+
+
+export {createThought,addNoteInThought,getAllThoughts,getThought}

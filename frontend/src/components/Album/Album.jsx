@@ -12,7 +12,7 @@ import AllNotes from '../Note/AllNotes.jsx';
 import AllImages from '../Images/AllImages.jsx';
 
 import AddNote from '../Note/AddNote.jsx';
-import AddImages from '../Images/AddImages';
+import AddImage from '../Images/AddImage.jsx';
 
 function Album() {
   const { albumId } = useParams();
@@ -40,7 +40,7 @@ function Album() {
   return (
     <div>
       <AddNote albumId={albumId}/>
-      <AddImages albumId={albumId}/>
+      <AddImage albumId={albumId}/>
       {album ?
         <div>
           Album Component

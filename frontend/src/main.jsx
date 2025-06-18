@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import {RouterProvider,createBrowserRouter,createRoutesFromElements,Route} from "react-router-dom"
+import {RouterProvider,createBrowserRouter,createRoutesFromElements,Route,Routes} from "react-router-dom"
 
 //components
 import App from './App.jsx'
@@ -8,6 +8,9 @@ import AllAlbums from './components/Album/AllAlbums.jsx'
 import Album from './components/Album/Album.jsx'
 import AllThoughts from './components/Thought/AllThoughts.jsx'
 import Thought from './components/Thought/Thought.jsx'
+import Login from "./components/Login/Login.jsx"
+import Signup from "./components/Signup/Signup.jsx"
+import Home from "./components/Home/Home.jsx"
 
 const allAlbums=[
   {
@@ -23,16 +26,20 @@ const allAlbums=[
   }
 ]
 
-
 const router = createBrowserRouter(createRoutesFromElements(
   <Route path="/" element={<App/>}>
+
+    <Route path="/" element={<Home/>}/>
+    <Route path="login" element={<Login/>} />
+    <Route path="signup" element={<Signup/>} />
+
     <Route path="albums" element={<AllAlbums allAlbums={allAlbums}/>} />
     <Route path="albums/:albumId" element={<Album />} /> 
-  
+
     <Route path="thoughts"  element={<AllThoughts/>}/>
     <Route path="thoughts/:thoughtId" element={<Thought />} />
-   
   </Route>
+  
 ))
 
 createRoot(document.getElementById('root')).render(

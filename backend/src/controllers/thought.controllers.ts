@@ -10,6 +10,10 @@ import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js"
 import { uploadFileOnCloudinary } from "../utils/cloudinary.js";
 
+type ThoughtParams={
+  thoughtId:string
+}
+
 //authMiddleware  ->  createThoughtValidation   ->  route handler
 const createThought=async(req:Request,res:Response):Promise<void>=>{
   const {title} = req.body;
@@ -113,7 +117,7 @@ const getAllThoughts=async(req:Request,res:Response,next:NextFunction):Promise<v
   }
 }
 
-const getThought=async(req:Request<AlbumParams>,res:Response):Promise<void>=>{
+const getThought=async(req:Request<ThoughtParams>,res:Response):Promise<void>=>{
   console.log('Inside getThought');
   
   const thoughtId=new mongoose.Types.ObjectId(req.params.thoughtId);

@@ -28,7 +28,7 @@ const authMiddleware:RequestHandler=async(req:Request,res:Response,next:NextFunc
     accessToken=req.headers.authorization.slice(7)
   }
 
-  console.log('accessToken = '+accessToken);
+  // console.log('accessToken = '+accessToken);
   
   if(!accessToken){
     throw new ApiError(401,"Access Token not found")

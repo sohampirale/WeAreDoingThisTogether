@@ -4,7 +4,8 @@ import { tempLogin } from '../utils/tempLogin.js'
 
 function TempLoginBtn() {
   return (
-    <button onClick={tempLogin}>Login</button>
+    <></>
+    // <button onClick={tempLogin}>Login</button>
   )
 }
 

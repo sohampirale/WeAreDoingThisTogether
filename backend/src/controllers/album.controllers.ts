@@ -4,6 +4,7 @@ import mongoose from "mongoose"
 //models
 import Album from "../models/album.models.js";
 import Note from "../models/note.models.js";
+// import Resource from "../models/resource.models.js"
 
 //utils
 import ApiError from "../utils/ApiError.js";
@@ -53,10 +54,6 @@ const uploadImagesInAlbum=async(req:Request,res:Response,next:NextFunction)=>{
     if(!album){
       throw new ApiError(404,"Album not found - Invalid albumId");
     }
-  
-    const allPaths=files!.map(obj=>{
-      return obj.path
-    })
   
     const allUrl=[]
     for(let i=0;i<files!.length;i++){
@@ -213,6 +210,63 @@ const getAlbum=async(req:Request<AlbumParams>,res:Response):Promise<void>=>{
   }
   
 }
+
+/*
+const uploadImagesInAlbum2=async(req:Request,res:Response,next:NextFunction)=>{
+  const albumId = new mongoose.Types.ObjectId(req.params.albumId);
+  const files=req.files! as Express.Multer.File[]
+
+  if(!albumId){
+    throw new ApiError(409,"AlbumId not given in params");
+  } else if(!files){
+    throw new ApiError(409,"Images not received");
+  }
+
+  const album=await Album.findById(albumId);
+  if(!album){
+    throw new ApiError(404,"Album not found");
+  }
+  const allResponses=[]
+  for(let i=0;i<files.length;i++){
+    try {
+      const response = await uploadFileOnCloudinary(files[i].path)
+      allResponses.push(response)
+    } catch (error) {
+      console.log("Failed to upload : "+files[i].originalname+" to cloudinary");
+    }
+  }
+
+  allResponses.forEach(response=>{
+      try {
+        const resource = await Resource.create({
+          public_id:response.public_id,
+          format:response.format,
+          resource_type:response.resource_type,
+          secure_url:response.secure_url,
+          url:response.url,
+          owner:req.user._id
+        })
+
+        if(resource){
+          album.data.push(resource)
+        }
+      } catch (error) {
+        console.log('Failed to add '+response.original_filenam+" in the array('data') of album");
+      }
+  })
+
+  try {  
+    await album.save();
+
+    res.status(200).json(
+      new ApiResponse(200,allResponses.length+" new resources addedd successfully")
+    );
+  } catch (error) {
+    next(error)
+  }
+
+}
+  */
 
 export {createAlbum,uploadImagesInAlbum,addNoteInAlbum,getAllAlbums,getAlbum}
 

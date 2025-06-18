@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
 import {Request,Response ,NextFunction} from "express"
+import jwt from "jsonwebtoken"
 
 //models
 import User from "../models/user.models.js"
@@ -16,7 +17,6 @@ import { generateAccessToken,generateRefreshToken } from "../utils/generateToken
 // interfaces
 import { IUserAuthMiddleware } from "../interfaces/validation.interfaces.js"; 
 import asyncHandler from "../utils/asyncHandler.js"
-
 interface MulterRequest extends Request{
   body:{
     albumId?:mongoose.Types.ObjectId
@@ -61,6 +61,9 @@ const userSignup=asyncHandler(async(req:Request,res:Response)=>{
 const userLogin=async(req:Request,res:Response,next:NextFunction):Promise<void>=>{
   const {username,password}:LoginBody=req.body;
   try {
+    // console.log('username : '+username);
+    // console.log("password : "+password);
+    
     
     const user = await User.findOne({
       username
@@ -70,7 +73,7 @@ const userLogin=async(req:Request,res:Response,next:NextFunction):Promise<void>=
       throw new ApiError(404,"User does not exists");
     }
   
-    if(!user.comparePassword(password)){
+    if(!await user.comparePassword(password)){
   
       console.log("Incorrect password");
       res.status(401).json(
@@ -165,4 +168,31 @@ const userLogout=asyncHandler(async(req:Request,res:Response)=>{
     )
 })
 
-export {userSignup,userLogin,userAddPartner,userLogout}
+const isLoggedIn=async(req:Request,res:Response)=>{
+  console.log('inside isLoggedIn');
+  
+  let accessToken;
+
+  if(req&&req.cookies&&req.cookies.accessToken){
+    accessToken=req.cookies.accessToken
+  } else if(req && req.headers && req.headers.authorization &&req.headers.authorization.startsWith("Bearer ")){
+    accessToken=req.headers.authorization.slice(7)
+  }
+
+  if(!accessToken){
+    throw new ApiError(403,"User not logged in")
+  }
+  try {
+    jwt.verify(accessToken,process.env.JWT_ACCESS_TOKEN_SECRET);
+    console.log('user is logged in !');
+    
+    res.status(200).json(
+      new ApiResponse(200,"User is logged in")
+    )
+  } catch (error) {
+    throw new ApiError(403,"Access token expired or invalid")
+  }
+}
+
+
+export {userSignup,userLogin,userAddPartner,userLogout,isLoggedIn}

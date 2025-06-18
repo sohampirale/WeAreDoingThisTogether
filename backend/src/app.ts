@@ -22,7 +22,7 @@ cloudinary.config({
 
 const app = express();
 
-const allowedOrigins=["https://cautious-funicular-x5v49945gprwcv9px-5173.app.github.dev","https://vigilant-garbanzo-wrvgj6vppjxg29v99-5173.app.github.dev"]
+const allowedOrigins=["https://cautious-funicular-x5v49945gprwcv9px-5173.app.github.dev","https://vigilant-garbanzo-wrvgj6vppjxg29v99-5173.app.github.dev","http://we-are-doing-this-together.vercel.app"]
 
 app.use(cors({
   origin:function(origin,callback){

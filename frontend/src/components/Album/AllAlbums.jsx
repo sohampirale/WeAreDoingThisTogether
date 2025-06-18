@@ -59,7 +59,7 @@ function AllAlbums() {
         <div className="space-y-6">
           {allAlbums && allAlbums.length != 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {allAlbums.data.map(album => (
+              {allAlbums.data?.map(album => (
                 <div key={album.albumId} className="transform hover:scale-105 transition-all duration-300">
                   <AlbumCard 
                     albumId={album.albumId} 

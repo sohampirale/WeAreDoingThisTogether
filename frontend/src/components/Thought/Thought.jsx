@@ -16,28 +16,28 @@ function Thought() {
   const { thoughtId } = useParams();
   const [thought, setThought] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const fetchedThought = await fetchThought(thoughtId);
-        if (fetchedThought) {
-          setThought(fetchedThought.data);
-        }
-      } catch (err) {
-        console.log('Error fetching the thought');
+  async function helperFetch() {
+    try {
+      const fetchedThought = await fetchThought(thoughtId);
+      if (fetchedThought) {
+        setThought(fetchedThought.data);
       }
-    };
+    } catch (err) {
+      console.log('Error fetching the thought');
+    }
+  }
 
-    fetchData();
+  useEffect(() => {
+    helperFetch();
   }, [thoughtId]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100 py-10 px-4">
       <div className="max-w-4xl mx-auto space-y-8">
-        
+
         {/* Add Note Section */}
         <div className="bg-white/60 backdrop-blur-md p-6 rounded-xl shadow-md border border-pink-200">
-          <AddNote thoughtId={thoughtId} />
+          <AddNote thoughtId={thoughtId} helperFetch={helperFetch}/>
         </div>
 
         {/* Main Thought Section */}

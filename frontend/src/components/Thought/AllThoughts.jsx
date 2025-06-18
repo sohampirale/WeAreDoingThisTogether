@@ -8,16 +8,17 @@ import AddThought from "./AddThought.jsx"
 function AllThoughts() {
   const [allThoughts, setAllThoughts] = useState(false)
 
-  useEffect(() => {
-    const fetchThoughts = async () => {
-      const fetchedThoughts = await fetchAllThoughts()
-      if (fetchedThoughts) {
-        setAllThoughts(fetchedThoughts)
-      } else {
-        console.log("Couldn't fetch thoughts")
-      }
+  async function helperFetch(){
+    const fetchedThoughts = await fetchAllThoughts()
+    if (fetchedThoughts) {
+      setAllThoughts(fetchedThoughts)
+    } else {
+      console.log("Couldn't fetch thoughts")
     }
-    fetchThoughts()
+  }
+
+  useEffect(() => {
+    helperFetch();
   }, [])
 
   return (
@@ -33,7 +34,7 @@ function AllThoughts() {
         </div>
 
         <div className="mb-8">
-          <AddThought />
+          <AddThought helperFetch={helperFetch}/>
         </div>
 
         <div className="bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg border border-pink-200 p-6">

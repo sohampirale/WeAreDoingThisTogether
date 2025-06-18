@@ -3,7 +3,7 @@ import React,{useState,useRef} from 'react'
 //utils
 import {createNewThought} from "../../utils/createNewThought.js"
 
-function AddThought() {
+function AddThought({helperFetch}) {
     const [click,setClick] =useState(false);
     const [thoughtTitle,setThoughtTitle]= useState("")
     const thoughtTitleRef = useRef();
@@ -58,7 +58,7 @@ function AddThought() {
                                     await createNewThought(thoughtTitle)
                                     setClick(prev=>!prev);
                                     setTimeout(()=>{
-                                        window.location.reload();
+                                        helperFetch();
                                     },1000)
                                 }}
                                 className="flex-1 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"

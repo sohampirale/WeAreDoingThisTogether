@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import { addNewNoteInAlbum, addNewNoteInThought } from '../../utils/addNewNote';
 
-function AddNote({ thoughtId, albumId }) {
+function AddNote({ thoughtId, albumId ,helperFetch}) {
   const [click, setClick] = useState(false);
   const [note, setNote] = useState("");
 
@@ -38,7 +38,7 @@ function AddNote({ thoughtId, albumId }) {
               await addHelper(thoughtId || albumId, note);
               setClick(prev => !prev);
               setTimeout(() => {
-                window.location.reload();
+                helperFetch();
               }, 1000);
             }}
             className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-2 rounded-md hover:scale-105 transition-transform duration-300"

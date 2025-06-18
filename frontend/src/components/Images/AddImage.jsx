@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { addNewImagesToAlbum } from "../../utils/addNewImagesToAlbum.js"
 
-function AddImage({ albumId }) {
+function AddImage({ albumId ,helperFetch}) {
   const [click, setClick] = useState(false);
   const fileInputRef = useRef();
 
@@ -34,7 +34,7 @@ function AddImage({ albumId }) {
               await addNewImagesToAlbum(files, albumId);
               setClick(prev => !prev);
               setTimeout(() => {
-                window.location.reload();
+                helperFetch();
               }, 1000);
             }}
             className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-2 rounded-md hover:scale-105 transition-transform duration-300"

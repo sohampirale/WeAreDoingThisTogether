@@ -2,7 +2,7 @@ import React,{useState,useRef} from 'react'
 
 import {createNewAlbum} from "../../utils/createNewAlbum.js"
 
-function AddAlbum() {
+function AddAlbum({helperFetch}) {
     const [click,setClick] =useState(false);
     const [albumTitle,setAlbumTitle]= useState("")
     const albumTitleRef = useRef();
@@ -20,7 +20,7 @@ function AddAlbum() {
                         <span className="text-2xl">📸</span>
                     </button>
                     <p className="text-rose-600 mt-3 font-medium">
-                        Start a new chapter of our love story
+                        Start a new chapter of our story
                     </p>
                 </div>
             )}
@@ -69,7 +69,9 @@ function AddAlbum() {
                                     setClick(prev=>!prev);
                                     
                                     setTimeout(()=>{
-                                        window.location.reload();
+                                        console.log("Calling helperFetch from AddAlbum.jsx");
+                                        
+                                        helperFetch()
                                     },1000)
                                 }}
                                 disabled={!albumTitle.trim()}

@@ -18,22 +18,20 @@ function Album() {
   console.log('AlbumId = ' + albumId);
   const [album,setAlbum]= useState(null);
 
-  useEffect(()=>{
-    const fetchData=async()=>{
-      try{
-        const fetchedAlbum = await fetchAlbum(albumId);
-        if(fetchedAlbum){
-          setAlbum(fetchedAlbum.data)
-          console.log('setAlbum done successfully : '+JSON.stringify(fetchedAlbum.data));
-        }
-      }catch(err){
-        console.log('Error fetching about album');
+  async function helperFetch(){
+    try{
+      const fetchedAlbum = await fetchAlbum(albumId);
+      if(fetchedAlbum){
+        setAlbum(fetchedAlbum.data)
+        console.log('setAlbum done successfully : '+JSON.stringify(fetchedAlbum.data));
       }
+    }catch(err){
+      console.log('Error fetching about album');
     }
+  }
 
-    if(albumId){
-      fetchData()
-    }
+  useEffect(()=>{
+    helperFetch();
   },[albumId])
 
   return (
@@ -69,7 +67,7 @@ function Album() {
                   <h3 className="text-xl font-semibold text-rose-800 mb-2">Add a Note</h3>
                   <p className="text-rose-600 text-sm mb-4">Capture thoughts and memories in words</p>
                 </div>
-                <AddNote albumId={albumId}/>
+                <AddNote albumId={albumId} helperFetch={helperFetch}/>
               </div>
               
               <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-pink-200">
@@ -78,7 +76,7 @@ function Album() {
                   <h3 className="text-xl font-semibold text-rose-800 mb-2">Add an Image</h3>
                   <p className="text-rose-600 text-sm mb-4">Upload precious moments and photos</p>
                 </div>
-                <AddImage albumId={albumId}/>
+                <AddImage albumId={albumId} helperFetch={helperFetch}/>
               </div>
             </div>
 

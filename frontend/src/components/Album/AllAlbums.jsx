@@ -13,19 +13,23 @@ function AllAlbums() {
   checkIsLoggedIn();
   const [allAlbums, setAllAlbums] = useState(false)
 
-  useEffect(() => {
-    const fetchAlbums = async () => {
-      const fetchedAllAlbums = await fetchAllAlbums();
-      if (fetchedAllAlbums) {
-        setAllAlbums(fetchedAllAlbums);
-        setTimeout(() => {
-          // window.location.reload();
-        }, 2000)
-      } else {
-        console.log("COuldn't fetch all albums");
-      }
+  async function helperFetch(){
+    console.log("Inside helperFetch");
+    
+    const fetchedAllAlbums = await fetchAllAlbums();
+
+    if (fetchedAllAlbums) {
+      setAllAlbums(fetchedAllAlbums);
+      setTimeout(() => {
+        // window.location.reload();
+      }, 2000)
+    } else {
+      console.log("Couldn't fetch all albums");
     }
-    fetchAlbums();
+  }
+
+  useEffect(() => {
+    helperFetch();
   }, [])
 
   return (
@@ -48,7 +52,7 @@ function AllAlbums() {
 
         {/* Add Album Component */}
         <div className="mb-8">
-          <AddAlbum />
+          <AddAlbum helperFetch={helperFetch}/>
         </div>
 
         {/* Albums Grid */}

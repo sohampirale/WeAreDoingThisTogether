@@ -1,6 +1,6 @@
 import React, { useEffect,useState } from 'react'
 import { useParams } from 'react-router'
-import { fetchAlbum } from '../../utils/fetch.utils';
+import { fetchAlbum } from '../../utils/fetch.utils.js';
 import axios from "axios"
 
 //utils
@@ -23,7 +23,7 @@ function Album() {
       const fetchedAlbum = await fetchAlbum(albumId);
       if(fetchedAlbum){
         setAlbum(fetchedAlbum.data)
-        console.log('setAlbum done successfully : '+JSON.stringify(fetchedAlbum.data));
+        // console.log('setAlbum done successfully : '+JSON.stringify(fetchedAlbum.data));
       }
     }catch(err){
       console.log('Error fetching about album');
@@ -124,11 +124,11 @@ function Album() {
                       <h2 className="text-2xl font-bold text-white">Our Photos</h2>
                       <span className="text-2xl">📸</span>
                     </div>
-                  </div>
+                  </div> 
                   
                   <div className="p-6">
-                    {album.images && album.images.length > 0 ? (
-                      <AllImages allImages={album.images}/>
+                    {album.data && album.data.length > 0 ? (
+                      <AllImages data={album.data} albumId={album.albumId} helperFetch={helperFetch}/>
                     ) : (
                       <div className="text-center py-8">
                         <div className="text-6xl mb-4 text-purple-300">📸</div>

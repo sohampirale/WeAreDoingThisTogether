@@ -1,9 +1,9 @@
 import React from 'react'
 import { useState } from 'react';
 
-import { addNewNoteInAlbum, addNewNoteInThought } from '../../utils/addNewNote';
+import { addNewNoteInAlbum, addNewNoteInThought,addNewNoteForResourceInAlbum } from '../../utils/addNewNote';
 
-function AddNote({ thoughtId, albumId ,helperFetch}) {
+function AddNote({ thoughtId, albumId ,helperFetch,resourceId}) {
   const [click, setClick] = useState(false);
   const [note, setNote] = useState("");
 
@@ -11,7 +11,14 @@ function AddNote({ thoughtId, albumId ,helperFetch}) {
     return <p className="text-red-500 font-medium">thoughtId or albumId is needed</p>;
   }
 
-  const addHelper = thoughtId ? addNewNoteInThought : addNewNoteInAlbum;
+  let addHelper ;
+  if(thoughtId){
+    addHelper=addNewNoteInThought
+  } else if(resourceId){
+    addHelper=addNewNoteForResourceInAlbum
+  } else if(albumId){
+    addHelper=addNewNoteInAlbum
+  }
 
   return (
     <div className="my-6">
@@ -35,7 +42,7 @@ function AddNote({ thoughtId, albumId ,helperFetch}) {
           />
           <button
             onClick={async () => {
-              await addHelper(thoughtId || albumId, note);
+              await addHelper(thoughtId || albumId, note,resourceId);
               setClick(prev => !prev);
               setTimeout(() => {
                 helperFetch();

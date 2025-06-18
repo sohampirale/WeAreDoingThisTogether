@@ -6,6 +6,7 @@ function AlbumCard({albumId,title,thumbnail,createdAt}) {
 
   function goToAlbum(albumId){
     console.log('Going to albumId : '+albumId);
+    alert("going to albumId : "+albumId)
     navigate("/albums/"+albumId)
   }
   console.log('thumbnail = '+thumbnail);

@@ -3,7 +3,8 @@ const albumRouter = express.Router();
 import multer from "multer";
 
 //controllers
-import {createAlbum,uploadImagesInAlbum,addNoteInAlbum,getAllAlbums,getAlbum} from "../controllers/album.controllers.js"
+import {createAlbum,uploadImagesInAlbum2,addNoteInAlbum,getAllAlbums,getAlbum,addNoteInResourceOfAlbum} 
+  from "../controllers/album.controllers.js"
 
 import authMiddleware from "../middlewares/auth.middlewares.js";
 
@@ -32,7 +33,10 @@ albumRouter.route("/")
 albumRouter.route("/:albumId")
   .get(authMiddleware,getAlbum)
   .post(authMiddleware,addNoteInAlbum)                                          //add note in album   
-  .put(authMiddleware,upload.array("uploadedImages"),uploadImagesInAlbum);      //add images in album
+  .put(authMiddleware,upload.array("uploadedImages"),uploadImagesInAlbum2);      //add images in album
 
+albumRouter.route("/:albumId/:resourceId")
+  .post(authMiddleware,addNoteInResourceOfAlbum)                                //add note for a resource
+  
 
 export default albumRouter;

@@ -10,7 +10,7 @@ function AllNotes({allNotes}) {
       {
         allNotes.map(oneNote=>{
           return(
-            <Note note={oneNote.note}/>
+            <Note key={oneNote.noteId} note={oneNote.note}/>
           )
         })
       }
